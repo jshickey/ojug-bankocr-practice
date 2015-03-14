@@ -39,4 +39,17 @@ ctrl-a         - start of line
 ctrl-e         - end of line
 ctrl-, s       - evaluation selection in repl
 
+* GIT
+Scotts-MacBook-Pro:ojug-bankocr jshickey$ git remote add origin https://github.com/jshickey/ojug-bankocr-kata.git
+Scotts-MacBook-Pro:ojug-bankocr jshickey$ git push -u origin master
+Counting objects: 22, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (19/19), done.
+Writing objects: 100% (22/22), 51.75 KiB | 0 bytes/s, done.
+Total 22 (delta 0), reused 0 (delta 0)
+To https://github.com/jshickey/ojug-bankocr-kata.git
+ * [new branch]      master -> master
+Branch master set up to track remote branch master from origin.
 
+git branch story1-complete 
+git push -u origin story1-complete
