@@ -6,11 +6,26 @@ class BankOcrMainSpec extends Specification {
 
     BankOcrConverter converter = new BankOcrConverter()
 
+    @Unroll
+    void "test check sum #accountNumber is #valid "() {
+        expect:
+        def isValid = converter.performChecksum(accountNumber)
+        assert valid == isValid
+
+        where:
+        accountNumber | valid
+        '711111111'   | true
+        '123456789'   | true
+        '490867715'   | true
+        '888888888'   | false
+        '490067715'   | false
+        '012345678'   | false
+    }
 
     void "test reading a real testFile ocr file with one account file"() {
         given:
         def fileName = '123456789.ocr'
-    
+
         when:
         def acctNumber = converter.readAcctNumberFromFile(fileName)
         
@@ -69,9 +84,9 @@ class BankOcrMainSpec extends Specification {
     void "test reading an ocr file with one account file"() {
         given:
         def testFile =  "    _  _     _  _  _  _  _ \n" +
-                        "  | _| _||_||_ |_   ||_||_|\n" +
-                        "  ||_  _|  | _||_|  ||_| _|\n" +
-                        "                           \n"
+        "  | _| _||_||_ |_   ||_||_|\n" +
+        "  ||_  _|  | _||_|  ||_| _|\n" +
+        "                           \n"
 
         when:
         def lines = testFile.readLines()
@@ -125,9 +140,9 @@ class BankOcrMainSpec extends Specification {
         // a list call [1..9] on OCR Digit to get back list of strings
         
         def testFile =  "    _  _     _  _  _  _  _ \n" +
-                        "  | _| _||_||_ |_   ||_||_|\n" +
-                        "  ||_  _|  | _||_|  ||_| _|\n" +
-                        "                           \n"
+        "  | _| _||_||_ |_   ||_||_|\n" +
+        "  ||_  _|  | _||_|  ||_| _|\n" +
+        "                           \n"
         when:
         def ocrStrings = converter.convertLinesToOcrDigits(testFile.readLines())
 
@@ -135,20 +150,20 @@ class BankOcrMainSpec extends Specification {
         assert ocrStrings.size() == 9
         assert ocrStrings.every { it.size() == 9 }
         assert ocrStrings[0] ==['   ',
-                                '  |',
-                                '  |'].join()
+        '  |',
+        '  |'].join()
         assert ocrStrings[8] == [' _ ',
-                                 '|_|',
-                                 ' _|'].join()
+        '|_|',
+        ' _|'].join()
 
     }
 
     void "test converting lines of text into a collection of 9 OCR strings"() {
         given:
         def testFile =  "    _  _     _  _  _  _  _ \n" +
-                        "  | _| _||_||_ |_   ||_||_|\n" +
-                        "  ||_  _|  | _||_|  ||_| _|\n" +
-                        "                           \n"
+        "  | _| _||_||_ |_   ||_||_|\n" +
+        "  ||_  _|  | _||_|  ||_| _|\n" +
+        "                           \n"
         when:
         def ocrStrings = converter.convertLinesToOcrDigits(testFile.readLines())
 
@@ -156,11 +171,11 @@ class BankOcrMainSpec extends Specification {
         assert ocrStrings.size() == 9
         assert ocrStrings.every { it.size() == 9 }
         assert ocrStrings[0] ==['   ',
-                                '  |',
-                                '  |'].join()
+        '  |',
+        '  |'].join()
         assert ocrStrings[8] == [' _ ',
-                                 '|_|',
-                                 ' _|'].join()
+        '|_|',
+        ' _|'].join()
 
     }
 
@@ -178,51 +193,51 @@ class BankOcrMainSpec extends Specification {
         assert ocrParts[8] == '999'
     }
 
-static ZEROES = """
+    static ZEROES = """
  _  _  _  _  _  _  _  _  _ 
 | || || || || || || || || |
 |_||_||_||_||_||_||_||_||_|
 
 """                           
-static ONES = """
+    static ONES = """
 
   |  |  |  |  |  |  |  |  |
   |  |  |  |  |  |  |  |  |
-                           
+
 """
 
-static TWOS = """
+    static TWOS = """
  _  _  _  _  _  _  _  _  _ 
  _| _| _| _| _| _| _| _| _|
 |_ |_ |_ |_ |_ |_ |_ |_ |_ 
-                           
-"""
-static THREES = """
+
+    """
+    static THREES = """
  _  _  _  _  _  _  _  _  _ 
  _| _| _| _| _| _| _| _| _|
  _| _| _| _| _| _| _| _| _|
-                           
+
 """
 
 static FOURS = """
-                           
+
 |_||_||_||_||_||_||_||_||_|
   |  |  |  |  |  |  |  |  |
-                           
+
 """
 
 static FIVES = ["""
  _  _  _  _  _  _  _  _  _ 
 |_ |_ |_ |_ |_ |_ |_ |_ |_ 
  _| _| _| _| _| _| _| _| _|
-                           
+
 """, '555555555']
 
-static SIXES = ["""
+    static SIXES = ["""
  _  _  _  _  _  _  _  _  _ 
 |_ |_ |_ |_ |_ |_ |_ |_ |_ 
 |_||_||_||_||_||_||_||_||_|
-                           
+
 """, '666666666']
 /*
  _  _  _  _  _  _  _  _  _ 

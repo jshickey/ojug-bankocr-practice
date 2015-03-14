@@ -1,5 +1,6 @@
 http://codingdojo.org/cgi-bin/index.pl?KataBankOCR
 
+
 Presentation Strategy:
 - already have a build.gradle that works
 - already have a utils method for reading files from the class path
@@ -32,6 +33,21 @@ dependencies {
 * Step 3 -> 
 
 gradle test --rerun-tasks
+
+*  Table driven tests in Spock
+:expect
+:where
+
+* User Story 2
+ 
+        accountNumber | valid
+        '711111111'   | true
+        '123456789'   | true
+        '490867715'   | true
+        '888888888'   | false
+        '490067715'   | false
+        '012345678'   | false
+
 
 * Sublime Keyboard Navigation
 alt-cmd arrow  - navigate tabs

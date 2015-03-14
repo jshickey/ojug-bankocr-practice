@@ -45,11 +45,27 @@ class BankOcrConverter {
                          (FOUR):'4', (FIVE):'5', (SIX):'6',
                          (SEVEN):'7', (EIGHT):'8',(NINE):'9', (ZERO):'0']
 
+   /*
+        account number:  3  4  5  8  8  2  8  6  5
+        position names:  d9 d8 d7 d6 d5 d4 d3 d2 d1
+
+        checksum calculation:
+        (d1+2*d2+3*d3 +..+9*d9) mod 11 = 0
+    */
+
+    Boolean performChecksum(String acctNumber) {
+        computeSum(acctNumber) % 11 == 0
+    }
+
+    def computeSum(acctNumber, acc = 0) {
+        acctNumber ? computeSum(acctNumber.drop(1), acc + (acctNumber.size() * acctNumber.take(1).toInteger())) : acc
+    }
 
     String readAcctNumberFromFile(String fileName) {
         File testFile = util.stringToClassPathFile(fileName)
         ocrToDec(convertLinesToOcrDigits(testFile.readLines()))
     }
+
 
     String readAcctNumberFromLines(List<String> lines) {
         ocrToDec(convertLinesToOcrDigits(lines))
