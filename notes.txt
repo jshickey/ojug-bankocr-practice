@@ -1,0 +1,42 @@
+http://codingdojo.org/cgi-bin/index.pl?KataBankOCR
+
+Presentation Strategy:
+- already have a build.gradle that works
+- already have a utils method for reading files from the class path
+- already have a utils method for a string as a list of characters
+- bonus: treat lists as lazy streams
+- bonus: process collection of accounts in parallel using gpars
+
+* Create an App
+lazybones create groovy-app ojug-bankocr
+
+** Modify Gradle
+*** add JCenter repository
+	jcenter()
+
+*** dependencies to pull in lastest spock, spock reporting
+dependencies {
+	compile     "org.codehaus.groovy:groovy-all:2.4.1"
+	testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+	testCompile 'com.athaydes:spock-reports:1.2.3'
+}
+
+
+* Kata
+** Think about the problem. Conceptually, it be great to convert list-of-lines into a list-of-ocr-digit-strings, then convert each ocr-digit into a decimal-digit, collect decimal-digit into an account-number.
+
+** Step 1 -> convert list-of-lines into list of ocr-digits. Each line contains 1/3 of each digit. It'd be nice to break apart each line and put the top, middle and bottom 1/3's of each OCR digit together.
+
+** Step 2 -> pull in the OCR Digits Enum class. It would take a while to type this class up and it's really pretty simple. It contains the mapping between OCR Digit String and Decimal Number.
+
+* Step 3 -> 
+
+gradle test --rerun-tasks
+
+* Sublime Keyboard Navigation
+alt-cmd arrow  - navigate tabs
+ctrl-a         - start of line
+ctrl-e         - end of line
+ctrl-, s       - evaluation selection in repl
+
+
