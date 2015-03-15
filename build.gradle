@@ -7,6 +7,7 @@ System.setProperty("org.gradle.color.success", "GREEN")
 
 apply plugin: "groovy"
 apply plugin: "application"
+apply plugin: 'eclipse'
 
 repositories {
 	jcenter()

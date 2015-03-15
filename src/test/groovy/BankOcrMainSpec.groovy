@@ -5,6 +5,20 @@ import spock.lang.*
 class BankOcrMainSpec extends Specification {
 
     BankOcrConverter converter = new BankOcrConverter()
+    def asLinesFromFile = {String s -> s.readLines().collect{ it.padRight(27) }}
+
+    @Unroll
+    void "test added status column to account number for #acctNumber : #acctWithStatus"() {
+        expect:
+        String result = converter.composeAccountWithStatus(acctNumber) 
+        assert acctWithStatus == result
+        
+        where:
+        acctNumber  | acctWithStatus
+        '457508000' | '457508000' 
+        '664371495' | '664371495 ERR'
+        '86110??36' | '86110??36 ILL'
+    }
 
     @Unroll
     void "test check sum #accountNumber is #valid "() {
@@ -83,13 +97,10 @@ class BankOcrMainSpec extends Specification {
 
     void "test reading an ocr file with one account file"() {
         given:
-        def testFile =  "    _  _     _  _  _  _  _ \n" +
-        "  | _| _||_||_ |_   ||_||_|\n" +
-        "  ||_  _|  | _||_|  ||_| _|\n" +
-        "                           \n"
+        def lines = asLinesFromFile ONE_TO_NINE
 
         when:
-        def lines = testFile.readLines()
+        //def lines = testFile.readLines()
         def acctNumber = converter.ocrToDec(converter.convertLinesToOcrDigits(lines))
         
         then:
@@ -99,7 +110,7 @@ class BankOcrMainSpec extends Specification {
 
     void "test reading an ocr account with triple quoted string"() {
         given:
-        List<String> lines = ONES.readLines().drop(1).collect{ it.padRight(27) }
+        List<String> lines = asLinesFromFile ONES 
 
         when:
         String acctNumber = converter.readAcctNumberFromLines(lines)
@@ -114,7 +125,7 @@ class BankOcrMainSpec extends Specification {
     @Unroll
     void "Convert OCR Digit version of #expectedAccountNumber"() {
         expect: "#expectedAccountNumber"
-        List<String> lines = filename.readLines().drop(1).collect{ it.padRight(27) }
+        List<String> lines = asLinesFromFile(filename)
         def acctNum = converter.readAcctNumberFromLines(lines)
         assert expectedAccountNumber == acctNum
 
@@ -139,12 +150,9 @@ class BankOcrMainSpec extends Specification {
         given:
         // a list call [1..9] on OCR Digit to get back list of strings
         
-        def testFile =  "    _  _     _  _  _  _  _ \n" +
-        "  | _| _||_||_ |_   ||_||_|\n" +
-        "  ||_  _|  | _||_|  ||_| _|\n" +
-        "                           \n"
+        def testFile = asLinesFromFile ONE_TO_NINE
         when:
-        def ocrStrings = converter.convertLinesToOcrDigits(testFile.readLines())
+        def ocrStrings = converter.convertLinesToOcrDigits(testFile)
 
         then:
         assert ocrStrings.size() == 9
@@ -160,12 +168,9 @@ class BankOcrMainSpec extends Specification {
 
     void "test converting lines of text into a collection of 9 OCR strings"() {
         given:
-        def testFile =  "    _  _     _  _  _  _  _ \n" +
-        "  | _| _||_||_ |_   ||_||_|\n" +
-        "  ||_  _|  | _||_|  ||_| _|\n" +
-        "                           \n"
+        def testFile = asLinesFromFile ONE_TO_NINE
         when:
-        def ocrStrings = converter.convertLinesToOcrDigits(testFile.readLines())
+        def ocrStrings = converter.convertLinesToOcrDigits(testFile)
 
         then:
         assert ocrStrings.size() == 9
@@ -193,47 +198,54 @@ class BankOcrMainSpec extends Specification {
         assert ocrParts[8] == '999'
     }
 
-    static ZEROES = """
+static ONE_TO_NINE = """\
+    _  _     _  _  _  _  _
+  | _| _||_||_ |_   ||_||_|
+  ||_  _|  | _||_|  ||_| _| 
+                           
+"""
+
+    static ZEROES = """\
  _  _  _  _  _  _  _  _  _ 
 | || || || || || || || || |
 |_||_||_||_||_||_||_||_||_|
 
 """                           
-    static ONES = """
+    static ONES = """\
 
   |  |  |  |  |  |  |  |  |
   |  |  |  |  |  |  |  |  |
 
 """
 
-    static TWOS = """
+    static TWOS = """\
  _  _  _  _  _  _  _  _  _ 
  _| _| _| _| _| _| _| _| _|
 |_ |_ |_ |_ |_ |_ |_ |_ |_ 
 
     """
-    static THREES = """
+    static THREES = """\
  _  _  _  _  _  _  _  _  _ 
  _| _| _| _| _| _| _| _| _|
  _| _| _| _| _| _| _| _| _|
 
 """
 
-static FOURS = """
+static FOURS = """\
 
 |_||_||_||_||_||_||_||_||_|
   |  |  |  |  |  |  |  |  |
 
 """
 
-static FIVES = ["""
+static FIVES = ["""\
  _  _  _  _  _  _  _  _  _ 
 |_ |_ |_ |_ |_ |_ |_ |_ |_ 
  _| _| _| _| _| _| _| _| _|
 
 """, '555555555']
 
-    static SIXES = ["""
+    static SIXES = ["""\
  _  _  _  _  _  _  _  _  _ 
 |_ |_ |_ |_ |_ |_ |_ |_ |_ 
 |_||_||_||_||_||_||_||_||_|

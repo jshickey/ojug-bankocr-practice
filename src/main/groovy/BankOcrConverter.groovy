@@ -53,6 +53,16 @@ class BankOcrConverter {
         (d1+2*d2+3*d3 +..+9*d9) mod 11 = 0
     */
 
+    String composeAccountWithStatus(String acctNumber) {
+        if (acctNumber.contains('?')) {
+            "$acctNumber ILL"
+        } else if (performChecksum(acctNumber)) {
+            acctNumber
+        } else {
+            "$acctNumber ERR"
+        }
+    }
+
     Boolean performChecksum(String acctNumber) {
         computeSum(acctNumber) % 11 == 0
     }
