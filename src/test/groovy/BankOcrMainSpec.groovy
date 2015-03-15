@@ -1,3 +1,5 @@
+import java.util.List;
+
 import spock.lang.*
 
 // Your first task is to write a program that can take this file and parse it into actual account numbers.
@@ -5,8 +7,23 @@ import spock.lang.*
 class BankOcrMainSpec extends Specification {
 
     BankOcrConverter converter = new BankOcrConverter()
+	Util util = new Util()
+	
     def asLinesFromFile = {String s -> s.readLines().collect{ it.padRight(27) }}
 
+	void "test read account numbers from file"() {
+		given:
+		String f = 'use-case-three.txt'
+		
+		when:
+		def report = converter.readAcctNumbersFromFile(f)
+		
+		then:
+		assert '000000051' == report[0]
+		assert '49006771? ILL' == report[1]
+	    assert '1234?678? ILL' == report[2]		
+	}
+	
     @Unroll
     void "test added status column to account number for #acctNumber : #acctWithStatus"() {
         expect:

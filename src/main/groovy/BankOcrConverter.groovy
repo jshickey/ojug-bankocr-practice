@@ -45,14 +45,7 @@ class BankOcrConverter {
                          (FOUR):'4', (FIVE):'5', (SIX):'6',
                          (SEVEN):'7', (EIGHT):'8',(NINE):'9', (ZERO):'0']
 
-   /*
-        account number:  3  4  5  8  8  2  8  6  5
-        position names:  d9 d8 d7 d6 d5 d4 d3 d2 d1
-
-        checksum calculation:
-        (d1+2*d2+3*d3 +..+9*d9) mod 11 = 0
-    */
-
+	
     String composeAccountWithStatus(String acctNumber) {
         if (acctNumber.contains('?')) {
             "$acctNumber ILL"
@@ -71,7 +64,18 @@ class BankOcrConverter {
         acctNumber ? computeSum(acctNumber.drop(1), acc + (acctNumber.size() * acctNumber.take(1).toInteger())) : acc
     }
 
-    String readAcctNumberFromFile(String fileName) {
+	List<String> readAcctNumbersFromFile(String fileName, acc = []) {
+		File testFile = util.stringToClassPathFile(fileName)
+		List<String> acctNumbers =  readAcctNumbersFromLines(testFile.readLines())
+		acctNumbers.collect { composeAccountWithStatus(it) }
+	}
+
+	List<String> readAcctNumbersFromLines(List<String> lines, acc = []) {
+		lines ? readAcctNumbersFromLines(lines.drop(4), acc << 	ocrToDec(convertLinesToOcrDigits(lines.take(4))))
+			  : acc
+	}
+	
+	String readAcctNumberFromFile(String fileName) {
         File testFile = util.stringToClassPathFile(fileName)
         ocrToDec(convertLinesToOcrDigits(testFile.readLines()))
     }
@@ -86,7 +90,7 @@ class BankOcrConverter {
     }
 
     String ocrToDec(String ocrNumber) {
-        return numberMap[ocrNumber]
+        return numberMap[ocrNumber] ?: '?'
     }
 
     /**
